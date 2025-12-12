@@ -1,0 +1,45 @@
+services:
+  kafka:
+    image: dhi/kafka:4-fips
+    hostname: myhost.local
+    volumes:
+      - ./server.properties:/opt/kafka/config/server.properties
+  
+  init:
+    build: .
+    depends_on:
+      - kafka
+    command: ["python", "/init.py"]
+    restart: on-failure
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: myhost.local:9092
+      KAFKA_TOPICS: foo,bar
+    volumes:
+      - ./init.py:/init.py
+
+  listener:
+    build: .
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    command: ["python", "/listen.py"]
+    restart: on-failure
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: myhost.local:9092
+      KAFKA_TOPIC: foo
+    volumes:
+      - ./listen.py:/listen.py
+  
+  producer:
+    build: .
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    command: ["python", "/produce.py"]
+    restart: always
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: myhost.local:9092
+      KAFKA_TOPIC: foo
+    volumes:
+      - ./produce.py:/produce.py
+    
