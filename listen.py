@@ -4,7 +4,12 @@ import sys
 from kafka import KafkaConsumer
 bootstrap_servers = os.environ['KAFKA_BOOTSTRAP_SERVERS']
 topic = os.environ['KAFKA_TOPIC']
-consumer = KafkaConsumer(topic, bootstrap_servers=bootstrap_servers)
+consumer = KafkaConsumer(
+    topic,
+    bootstrap_servers=bootstrap_servers,
+    security_protocol='SSL',
+    ssl_cafile='/opt/kafka/ssl/rootCA.pem',
+)
 sys.stdout.write ("listening...\n")
 sys.stdout.flush()
 for msg in consumer:

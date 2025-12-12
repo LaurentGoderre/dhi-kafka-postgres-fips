@@ -1,16 +1,22 @@
 #!/usr/bin/env python
 import os
+import time
 
 from kafka import KafkaAdminClient
 from kafka.admin import NewTopic
 from kafka.errors import NoBrokersAvailable, TopicAlreadyExistsError
+
+# time.sleep(5)
 
 bootstrap_servers = os.environ['KAFKA_BOOTSTRAP_SERVERS']
 topics = os.environ['KAFKA_TOPICS']
 
 client: KafkaAdminClient
 try:
-    client = KafkaAdminClient(bootstrap_servers=bootstrap_servers)
+    client = KafkaAdminClient(bootstrap_servers=bootstrap_servers,
+        security_protocol='SSL',
+        ssl_cafile='/opt/kafka/ssl/rootCA.pem',
+    )
 except NoBrokersAvailable:
     print ("Not ready")
     exit(1)

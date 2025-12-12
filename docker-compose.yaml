@@ -4,6 +4,7 @@ services:
     hostname: myhost.local
     volumes:
       - ./server.properties:/opt/kafka/config/server.properties
+      - ./certs:/opt/kafka/ssl
   
   init:
     build: .
@@ -12,10 +13,11 @@ services:
     command: ["python", "/init.py"]
     restart: on-failure
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: myhost.local:9092
+      KAFKA_BOOTSTRAP_SERVERS: myhost.local:9093
       KAFKA_TOPICS: foo,bar
     volumes:
       - ./init.py:/init.py
+      - ./certs:/opt/kafka/ssl
 
   listener:
     build: .
@@ -25,10 +27,11 @@ services:
     command: ["python", "/listen.py"]
     restart: on-failure
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: myhost.local:9092
+      KAFKA_BOOTSTRAP_SERVERS: myhost.local:9093
       KAFKA_TOPIC: foo
     volumes:
       - ./listen.py:/listen.py
+      - ./certs:/opt/kafka/ssl
   
   producer:
     build: .
@@ -38,8 +41,9 @@ services:
     command: ["python", "/produce.py"]
     restart: always
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: myhost.local:9092
+      KAFKA_BOOTSTRAP_SERVERS: myhost.local:9093
       KAFKA_TOPIC: foo
     volumes:
       - ./produce.py:/produce.py
+      - ./certs:/opt/kafka/ssl
     
